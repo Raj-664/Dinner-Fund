@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dinner Fund{% endblock %} | Dinner Fund</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20260924-final">
+</head>
+
+<body class="app-shell">
+  <aside class="sidebar">
+    <a class="sidebar-brand" href="{{ url_for('dashboard') }}">
+      <span class="sidebar-chef" aria-hidden="true">👨‍🍳</span>
+      <span class="sidebar-brand-text">
+        <strong>Dinner Fund</strong>
+        <small>Good Food &nbsp;•&nbsp; Good Friends <span>❤️</span></small>
+      </span>
+    </a>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <a href="{{ url_for('dashboard') }}" class="{{ 'active' if active == 'dashboard' }}">
+        <span class="nav-icon">⌂</span><span class="nav-label">Dashboard</span>
+      </a>
+      <a href="{{ url_for('payments') }}" class="{{ 'active' if active == 'payments' }}">
+        <span class="nav-icon">▣</span><span class="nav-label">Payments</span>
+      </a>
+      <a href="{{ url_for('dinner') }}" class="{{ 'active' if active == 'dinner' }}">
+        <span class="nav-icon">🍴</span><span class="nav-label">Dinner</span>
+      </a>
+      <a href="{{ url_for('people') }}" class="{{ 'active' if active == 'people' }}">
+        <span class="nav-icon">♟</span><span class="nav-label">People</span>
+      </a>
+      <a href="{{ url_for('history') }}" class="{{ 'active' if active == 'history' }}">
+        <span class="nav-icon">◷</span><span class="nav-label">History</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-art" aria-hidden="true">
+      <div class="sidebar-art-copy">Good<br>Food<br>Brings<br>Great<br>People<br><span>❤️</span></div>
+      <div class="noodle-bowl">🍜</div>
+    </div>
+
+    <button class="mobile-theme-toggle theme-toggle" id="mobileThemeToggle" type="button" aria-label="Switch theme" aria-pressed="false">
+      <span class="theme-light">☀️ Light</span><span class="theme-divider">•</span><span class="theme-dark">🌙 Dark</span>
+    </button>
+
+    <div class="sidebar-tip">
+      <span class="tip-rocket">🚀</span>
+      <span><strong>Keep the Dinner Fund Alive!</strong><small>Eat together. Split smarter.</small></span>
+    </div>
+  </aside>
+
+  <div class="app-content">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="top-search">
+          <span>⌕</span>
+          <input type="search" placeholder="Search payments, dinners, people..." aria-label="Search">
+        </div>
+        <div class="topbar-actions">
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme" aria-pressed="false">
+            <span class="theme-light">☀️ Light</span><span class="theme-divider">•</span><span class="theme-dark">🌙 Dark</span>
+          </button>
+          <button class="icon-button" type="button" aria-label="Notifications">♧<i></i></button>
+          <span class="top-divider"></span>
+          <div class="profile">
+            <span class="profile-avatar">RM</span>
+            <span class="profile-copy"><strong>Raj Mallick</strong><small>Dinner Crew Member</small></span>
+            <span class="profile-arrow">⌄</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container main">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-stack">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+                <button type="button" class="flash-close" aria-label="Dismiss">&times;</button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+      <div class="footer-left">🍴 <strong>Dinner Fund</strong> &nbsp; v1.0 &nbsp;|&nbsp; Good Food • Good Friends • Bright Memories ❤️</div>
+      <div class="footer-right">Eat Together &nbsp;•&nbsp; Split Smarter &nbsp;•&nbsp; Stay Happier! ❤️</div>
+    </footer>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=20260924-final"></script>
+</body>
+</html>

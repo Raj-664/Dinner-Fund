@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Dinner Item' if item else 'Add Dinner Item' }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ 'Edit Dinner Item' if item else 'Add Dinner Item' }}</h1>
+    <p class="muted">Food bought or brought for dinner. The amount is deducted from the common balance.</p>
+  </div>
+  <a href="{{ url_for('dinner') }}" class="btn btn-ghost">&larr; Back</a>
+</div>
+
+<section class="card form-card">
+  <form method="post" novalidate class="form"
+        action="{{ url_for('edit_dinner', item_id=item.id) if item else url_for('add_dinner') }}">
+    <div class="field">
+      <label for="food_name">Food Name <span class="req">*</span></label>
+      <input type="text" id="food_name" name="food_name" maxlength="120" required
+             placeholder="e.g. Rice"
+             value="{{ request.form.get('food_name', item.food_name if item else '') }}">
+    </div>
+
+    <div class="field">
+      <label for="amount">Amount (&#8377;) <span class="req">*</span></label>
+      <input type="number" id="amount" name="amount" min="0.01" step="0.01" required
+             placeholder="e.g. 40"
+             value="{{ request.form.get('amount', item.amount if item else '') }}">
+    </div>
+
+    <div class="field">
+      <label for="person_name">Bought / Brought By <span class="req">*</span></label>
+      <input type="text" id="person_name" name="person_name" list="people-list" maxlength="120" required
+             placeholder="e.g. Raj"
+             value="{{ request.form.get('person_name', item.person_name if item else '') }}">
+      <datalist id="people-list">
+        {% for person in persons %}
+          <option value="{{ person }}"></option>
+        {% endfor %}
+      </datalist>
+    </div>
+
+    <div class="field">
+      <label for="date">Date <span class="req">*</span></label>
+      <input type="date" id="date" name="date" required
+             value="{{ request.form.get('date', (item.date.isoformat() if item else today.isoformat())) }}">
+    </div>
+
+    <div class="field">
+      <label for="note">Note <span class="muted">(optional)</span></label>
+      <input type="text" id="note" name="note" maxlength="255"
+             placeholder="e.g. Dinner for 5 people"
+             value="{{ request.form.get('note', item.note if item else '') }}">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{{ 'Save Changes' if item else 'Add Dinner Item' }}</button>
+      <a href="{{ url_for('dinner') }}" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

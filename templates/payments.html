@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Payments{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Payments</h1>
+    <p class="muted">All money contributed to the common dinner fund.</p>
+  </div>
+  <a href="{{ url_for('add_payment') }}" class="btn btn-primary">+ Add Payment</a>
+</div>
+
+<section class="stat-grid stat-grid-2">
+  <div class="stat-card">
+    <span class="stat-label">Total Paid (All Time)</span>
+    <span class="stat-value">{{ total_paid | inr }}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Total Paid (Filtered)</span>
+    <span class="stat-value">{{ filtered_total | inr }}</span>
+  </div>
+</section>
+
+<section class="card">
+  <form method="get" class="filter-form">
+    <div class="field">
+      <label for="person">Person</label>
+      <input type="text" id="person" name="person" placeholder="Search name"
+             list="people-list" value="{{ filters.person }}">
+      <datalist id="people-list">
+        {% for person in persons %}<option value="{{ person }}"></option>{% endfor %}
+      </datalist>
+    </div>
+    <div class="field">
+      <label for="start">From</label>
+      <input type="date" id="start" name="start" value="{{ filters.start }}">
+    </div>
+    <div class="field">
+      <label for="end">To</label>
+      <input type="date" id="end" name="end" value="{{ filters.end }}">
+    </div>
+    <div class="filter-actions">
+      <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+      <a href="{{ url_for('payments') }}" class="btn btn-ghost btn-sm">Reset</a>
+    </div>
+  </form>
+</section>
+
+<section class="card">
+  {% if payments %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Person</th>
+            <th>Note</th>
+            <th class="right">Amount</th>
+            <th class="right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for payment in payments %}
+            <tr>
+              <td data-label="Date">{{ payment.date | pretty_date }}</td>
+              <td data-label="Person"><strong>{{ payment.person_name }}</strong></td>
+              <td data-label="Note" class="muted">{{ payment.note or '-' }}</td>
+              <td data-label="Amount" class="right income">{{ payment.amount | inr }}</td>
+              <td data-label="Actions" class="right actions">
+                <a href="{{ url_for('edit_payment', payment_id=payment.id) }}" class="btn btn-ghost btn-xs">Edit</a>
+                <form method="post" class="inline"
+                      action="{{ url_for('delete_payment', payment_id=payment.id) }}"
+                      onsubmit="return confirm('Delete this payment of {{ payment.amount | inr }} from {{ payment.person_name }}? This cannot be undone.');">
+                  <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="right">Filtered Total</td>
+            <td class="right income">{{ filtered_total | inr }}</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty">
+      <p>No payments found.</p>
+      <a href="{{ url_for('add_payment') }}" class="btn btn-primary btn-sm">+ Add Payment</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

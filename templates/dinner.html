@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Dinner{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Daily Dinner</h1>
+    <p class="muted">Food items and expenses for the selected date.</p>
+  </div>
+  <a href="{{ url_for('add_dinner') }}" class="btn btn-primary">+ Add Dinner Item</a>
+</div>
+
+<section class="card">
+  <form method="get" class="filter-form">
+    <div class="field">
+      <label for="date">Select Date</label>
+      <input type="date" id="date" name="date" value="{{ selected.isoformat() if selected }}">
+    </div>
+    <div class="field">
+      <label for="person">Person</label>
+      <input type="text" id="person" name="person" placeholder="Filter by buyer"
+             list="people-list" value="{{ person_filter }}">
+      <datalist id="people-list">
+        {% for person in persons %}<option value="{{ person }}"></option>{% endfor %}
+      </datalist>
+    </div>
+    <div class="filter-actions">
+      <button type="submit" class="btn btn-secondary btn-sm">Show</button>
+      <a href="{{ url_for('dinner') }}" class="btn btn-ghost btn-sm">Today</a>
+    </div>
+  </form>
+</section>
+
+<section class="day-summary">
+  <div class="mini-stat">
+    <span class="mini-label">Previous Balance</span>
+    <span class="mini-value">{{ previous | inr }}</span>
+  </div>
+  <div class="mini-stat">
+    <span class="mini-label">Today's Expense</span>
+    <span class="mini-value expense">{{ day_total | inr }}</span>
+  </div>
+  <div class="mini-stat mini-highlight">
+    <span class="mini-label">Remaining Balance</span>
+    <span class="mini-value">{{ remaining | inr }}</span>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>{{ selected | pretty_date("%d %B %Y") }}</h2>
+    <span class="muted">{{ items | length }} item(s)</span>
+  </div>
+
+  {% if items %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Food</th>
+            <th>Bought / Brought By</th>
+            <th>Note</th>
+            <th class="right">Amount</th>
+            <th class="right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <td data-label="Food"><strong>{{ item.food_name }}</strong></td>
+              <td data-label="Bought By">{{ item.person_name }}</td>
+              <td data-label="Note" class="muted">{{ item.note or '-' }}</td>
+              <td data-label="Amount" class="right expense">{{ item.amount | inr }}</td>
+              <td data-label="Actions" class="right actions">
+                <a href="{{ url_for('edit_dinner', item_id=item.id) }}" class="btn btn-ghost btn-xs">Edit</a>
+                <form method="post" class="inline"
+                      action="{{ url_for('delete_dinner', item_id=item.id) }}"
+                      onsubmit="return confirm('Delete {{ item.food_name }} ({{ item.amount | inr }})? This cannot be undone.');">
+                  <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="right">Total</td>
+            <td class="right expense"><strong>{{ day_total | inr }}</strong></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="balance-note">
+      <span>Previous Balance: <strong>{{ previous | inr }}</strong></span>
+      <span class="op">&minus;</span>
+      <span>Today's Expense: <strong>{{ day_total | inr }}</strong></span>
+      <span class="op">=</span>
+      <span>Remaining: <strong>{{ remaining | inr }}</strong></span>
+    </div>
+  {% else %}
+    <div class="dinner-empty-state">
+      <div class="dinner-empty-art">
+        <img src="{{ url_for('static', filename='images/dinner-bowl.svg') }}" alt="Dinner bowl">
+      </div>
+      <div class="dinner-empty-copy">
+        <span class="dinner-empty-kicker">🍽️ Dinner time</span>
+        <h3>No dinner items yet</h3>
+        <p>No food items for {{ selected | pretty_date("%d %B %Y") }}. Add today's food and keep the fund history complete.</p>
+        <a href="{{ url_for('add_dinner') }}" class="btn btn-primary">+ Add Dinner Item</a>
+      </div>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

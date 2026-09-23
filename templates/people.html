@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}People{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>People</h1>
+    <p class="muted">Per-person contributions and food purchases.</p>
+  </div>
+</div>
+
+{% if people %}
+  <section class="people-grid">
+    {% for person in people %}
+      <div class="card person-card">
+        <div class="person-head">
+          <span class="avatar">{{ person.name[0] | upper }}</span>
+          <h2>{{ person.name }}</h2>
+        </div>
+        <div class="person-rows">
+          <div class="person-row">
+            <span>Total paid</span>
+            <strong class="income">{{ person.paid | inr }}</strong>
+          </div>
+          <div class="person-row">
+            <span>Food purchases</span>
+            <strong>{{ person.food_count }}</strong>
+          </div>
+          <div class="person-row">
+            <span>Food amount brought</span>
+            <strong class="expense">{{ person.food_amount | inr }}</strong>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+{% else %}
+  <section class="card">
+    <div class="empty">
+      <p>No people yet. Add a payment or a dinner item to see person-wise totals.</p>
+      <div class="empty-actions">
+        <a href="{{ url_for('add_payment') }}" class="btn btn-primary btn-sm">+ Add Payment</a>
+        <a href="{{ url_for('add_dinner') }}" class="btn btn-secondary btn-sm">+ Add Dinner</a>
+      </div>
+    </div>
+  </section>
+{% endif %}
+{% endblock %}

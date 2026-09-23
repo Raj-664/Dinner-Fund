@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}History{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Running Balance History</h1>
+    <p class="muted">Day-by-day payments, food expenses and remaining balance.</p>
+  </div>
+</div>
+
+<section class="stat-grid stat-grid-3">
+  <div class="stat-card">
+    <span class="stat-label">Total Paid</span>
+    <span class="stat-value income">{{ total_paid | inr }}</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-label">Total Food Expense</span>
+    <span class="stat-value expense">{{ total_food | inr }}</span>
+  </div>
+  <div class="stat-card stat-balance">
+    <span class="stat-label">Current Balance</span>
+    <span class="stat-value">{{ current_balance() | inr }}</span>
+  </div>
+</section>
+
+<section class="card">
+  {% if rows %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th class="right">Previous Balance</th>
+            <th class="right">Payment Added</th>
+            <th class="right">Food Expense</th>
+            <th class="right">Remaining</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="opening-row">
+            <td><strong>Start</strong></td>
+            <td class="right">&mdash;</td>
+            <td class="right">&mdash;</td>
+            <td class="right">&mdash;</td>
+            <td class="right"><strong>{{ 0 | inr }}</strong></td>
+          </tr>
+          {% for row in rows %}
+            <tr>
+              <td data-label="Date">{{ row.date | pretty_date("%d %b %Y") }}</td>
+              <td data-label="Previous" class="right">{{ row.previous | inr }}</td>
+              <td data-label="Payment Added" class="right income">
+                {{ row.paid | inr if row.paid else '—' }}
+              </td>
+              <td data-label="Food Expense" class="right expense">
+                {{ row.expense | inr if row.expense else '—' }}
+              </td>
+              <td data-label="Remaining" class="right"><strong>{{ row.remaining | inr }}</strong></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" class="right">Totals</td>
+            <td class="right income">{{ total_paid | inr }}</td>
+            <td class="right expense">{{ total_food | inr }}</td>
+            <td class="right"><strong>{{ current_balance() | inr }}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty">
+      <p>No history yet. Add a payment or a dinner item to build the running balance.</p>
+      <div class="empty-actions">
+        <a href="{{ url_for('add_payment') }}" class="btn btn-primary btn-sm">+ Add Payment</a>
+        <a href="{{ url_for('add_dinner') }}" class="btn btn-secondary btn-sm">+ Add Dinner</a>
+      </div>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="reference-welcome">
+  <div>
+    <h1>Good Evening! <span>👋</span></h1>
+    <p>Food tastes better when costs are shared <span>😋</span></p>
+  </div>
+  <div class="welcome-slogan">(( Same Food<br>Different People<br>Happier Together )) <span>❤️</span></div>
+  <div class="welcome-food" aria-hidden="true"><span>🍕</span><span>🍔</span><span>🥤</span></div>
+</div>
+
+<section class="reference-stats">
+  <div class="reference-stat stat-green">
+    <div class="stat-art">💵</div>
+    <div><span>Current Balance</span><strong>{{ current_balance() | inr }}</strong><small>Still good for more food! 🎉</small></div>
+  </div>
+  <div class="reference-stat stat-purple">
+    <div class="stat-art">🪙</div>
+    <div><span>Total Money Paid</span><strong>{{ total_paid | inr }}</strong><small>Sum of all contributions</small></div>
+  </div>
+  <div class="reference-stat stat-orange">
+    <div class="stat-art">🍴</div>
+    <div><span>Today's Food Expense</span><strong>{{ todays_expense | inr }}</strong><small>{{ todays_items | length }} item(s) today</small></div>
+  </div>
+  <div class="reference-stat stat-blue">
+    <div class="stat-art">👥</div>
+    <div><span>Number of People</span><strong>{{ people_count }}</strong><small>Contributors &amp; buyers</small></div>
+  </div>
+</section>
+
+<section class="dashboard-art-strip" aria-label="Dinner crew">
+  <div class="dashboard-art-card art-food">
+    <img src="{{ url_for('static', filename='images/dinner-bowl.svg') }}" alt="Colorful dinner bowl">
+    <div><strong>Good food</strong><small>Shared tastes, shared smiles.</small></div>
+  </div>
+  <div class="dashboard-art-card art-crew">
+    <img src="{{ url_for('static', filename='images/crew-food.svg') }}" alt="Dinner crew A R S S">
+    <div><strong>A · R · S · S</strong><small>One fund. One happy crew.</small></div>
+  </div>
+  <div class="dashboard-art-card art-dessert">
+    <img src="{{ url_for('static', filename='images/food-party.svg') }}" alt="Food party illustration">
+    <div><strong>Eat together</strong><small>Split smarter. Stay happier.</small></div>
+  </div>
+</section>
+
+<section class="reference-actions">
+  <a href="{{ url_for('add_payment') }}" class="reference-action payment-action">
+    <span class="action-round">＋</span>
+    <span><strong>Add Payment</strong><small>Contribute to the fund</small></span>
+    <b>→</b>
+  </a>
+  <a href="{{ url_for('add_dinner') }}" class="reference-action dinner-action">
+    <span class="action-round">🍴</span>
+    <span><strong>Add Dinner</strong><small>Log today's food expense</small></span>
+    <b>→</b>
+  </a>
+</section>
+
+<section class="reference-columns">
+  <div class="reference-main-column">
+    <div class="reference-card activity-card">
+      <div class="reference-card-head">
+        <h2>⚡ Recent Activity</h2>
+        <a href="{{ url_for('history') }}" class="outline-link">View All →</a>
+      </div>
+
+      {% if transactions %}
+        <div class="activity-list">
+          {% for t in transactions[:5] %}
+            <div class="activity-row">
+              <div class="activity-icon {{ 'activity-income' if t.type == 'Payment' else 'activity-expense' }}">{{ '↑' if t.type == 'Payment' else '↓' }}</div>
+              <div class="activity-copy">
+                <strong>
+                  {% if t.type == 'Payment' %}{{ t.title }} added <em>{{ t.amount | inr }}</em>
+                  {% else %}{{ t.person }} bought dinner <em class="red">{{ t.amount | inr }}</em>{% endif %}
+                </strong>
+                <small>
+                  {% if t.note %}{{ t.note }}{% elif t.type == 'Dinner' %}{{ t.title }}{% else %}Keep the dinner going! 🎉{% endif %}
+                </small>
+              </div>
+              <time>{{ t.date | pretty_date("%d %b") }}</time>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty reference-empty"><p>No activity yet. Start by adding a payment or dinner.</p></div>
+      {% endif %}
+    </div>
+
+    <div class="reference-card mood-card">
+      <div class="mood-bowl">🍜</div>
+      <div><strong>Good food,<br>Good mood! 😋</strong><small>Let's keep the dinner fund healthy!</small></div>
+    </div>
+  </div>
+
+  <div class="reference-card expense-card">
+    <div class="reference-card-head">
+      <h2>▥ Expense Overview</h2>
+      <span class="period-pill">This Week⌄</span>
+    </div>
+    <div class="bar-chart">
+      {% set chart_max = (weekly_expenses | map(attribute='amount') | max) if weekly_expenses else 0 %}
+      {% for item in weekly_expenses %}
+        {% set height = (item.amount / chart_max * 100) if chart_max else 4 %}
+        <div class="bar-column">
+          <div class="bar-value">{{ item.amount | round(0) }}</div>
+          <div class="bar-track"><div class="bar-fill" style="height: {{ [height, 4] | max }}%;"></div></div>
+          <small>{{ item.label }}</small>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <aside class="reference-side">
+    <div class="reference-card quote-card">
+      <div class="quote-mark">“</div>
+      <h2>Today's Quote</h2>
+      <p>“Life is too short<br>for bad food and<br>unsettled bills.” ❤️</p>
+      <div class="quote-chef">🧑‍🍳</div>
+    </div>
+
+    <div class="reference-card contributors-card">
+      <div class="reference-card-head"><h2>👑 Top Contributors</h2></div>
+      <div class="contributors">
+        {% for person in people[:5] %}
+          <div class="contributor-row">
+            <span class="contributor-avatar">{{ person.name[:2] | upper }}</span>
+            <span class="contributor-name">{{ person.name }}</span>
+            <strong>{{ person.paid | inr }}</strong>
+          </div>
+        {% else %}
+          <div class="empty"><p>No contributors yet.</p></div>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+</section>
+
+<section class="reference-card dinner-preview">
+  <div class="reference-card-head">
+    <h2>🍽️ Today's Dinner</h2>
+    <a href="{{ url_for('dinner') }}" class="outline-link">View All →</a>
+  </div>
+  {% if todays_items %}
+    <div class="dinner-chip-list">
+      {% for item in todays_items %}
+        <div class="dinner-chip"><span>{{ item.food_name }}</span><small>by {{ item.person_name }}</small><strong>{{ item.amount | inr }}</strong></div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty"><p>No dinner items added today yet.</p><a href="{{ url_for('add_dinner') }}" class="btn btn-secondary btn-sm">+ Add Dinner</a></div>
+  {% endif %}
+</section>
+{% endblock %}
