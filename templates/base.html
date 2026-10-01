@@ -6,7 +6,7 @@
   <title>{% block title %}Dinner Fund{% endblock %} | Dinner Fund</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20260924-final">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20261001-amount-fix">
 </head>
 
 <body class="app-shell">
@@ -55,9 +55,14 @@
   <div class="app-content">
     <header class="topbar">
       <div class="topbar-inner">
-        <div class="top-search">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Toggle sidebar" aria-expanded="true" title="Toggle sidebar (Ctrl+Shift+S)">
+            <span class="sidebar-toggle-icon" aria-hidden="true"><span></span><span></span></span>
+          </button>
+          <div class="top-search">
           <span>⌕</span>
           <input type="search" placeholder="Search payments, dinners, people..." aria-label="Search">
+          </div>
         </div>
         <div class="topbar-actions">
           <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme" aria-pressed="false">
@@ -97,6 +102,6 @@
     </footer>
   </div>
 
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=20260924-final"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=20261001-amount-fix"></script>
 </body>
 </html>

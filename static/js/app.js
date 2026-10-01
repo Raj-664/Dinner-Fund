@@ -15,6 +15,40 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+
+  // Sidebar toggle (desktop + mobile)
+  var sidebarToggle = document.getElementById("sidebarToggle");
+  var shell = document.body;
+  var sidebarCollapsed = false;
+
+  function applySidebarState(collapsed) {
+    sidebarCollapsed = collapsed;
+    shell.classList.toggle("sidebar-collapsed", collapsed);
+    if (sidebarToggle) {
+      sidebarToggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+      sidebarToggle.setAttribute("aria-label", collapsed ? "Show sidebar" : "Hide sidebar");
+      sidebarToggle.setAttribute("title", collapsed ? "Show sidebar (Ctrl+Shift+S)" : "Hide sidebar (Ctrl+Shift+S)");
+    }
+    try { localStorage.setItem("dinner-fund-sidebar-collapsed", collapsed ? "1" : "0"); } catch (error) {}
+  }
+
+  try { sidebarCollapsed = localStorage.getItem("dinner-fund-sidebar-collapsed") === "1"; }
+  catch (error) { sidebarCollapsed = false; }
+  applySidebarState(sidebarCollapsed);
+
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener("click", function () {
+      applySidebarState(!sidebarCollapsed);
+    });
+  }
+
+  document.addEventListener("keydown", function (event) {
+    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "s") {
+      event.preventDefault();
+      applySidebarState(!sidebarCollapsed);
+    }
+  });
+
   var savedTheme = "light";
   try { savedTheme = localStorage.getItem("dinner-fund-theme") || "light"; }
   catch (error) { savedTheme = "light"; }
