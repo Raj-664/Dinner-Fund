@@ -67,12 +67,41 @@
         <tbody>
           {% for item in items %}
             <tr>
-              <td data-label="Food"><strong>{{ item.food_name }}</strong></td>
+              <td data-label="Food">
+                <strong>{{ item.food_name }}</strong>
+
+                {% if item.quantities %}
+                  <div class="food-quantity-display" style="margin-top: 8px;">
+                    <div class="muted" style="margin-bottom: 4px;">
+                      <strong>Food Quantity</strong>
+                    </div>
+
+                    {% set quantity_total = namespace(value=0) %}
+
+                    {% for quantity in item.quantities %}
+                      {% set quantity_total.value = quantity_total.value + quantity.quantity %}
+                      <div>
+                        {{ quantity.person_name }} → {{ quantity.quantity|int if quantity.quantity == quantity.quantity|int else quantity.quantity }} {{ item.food_name|lower }}
+                      </div>
+                    {% endfor %}
+
+                    <div style="margin-top: 4px;">
+                      <strong>Total Quantity:
+                        {{ quantity_total.value|int if quantity_total.value == quantity_total.value|int else quantity_total.value }}
+                        {{ item.food_name|lower }}
+                      </strong>
+                    </div>
+                  </div>
+                {% endif %}
+              </td>
+
               <td data-label="Bought By">{{ item.person_name }}</td>
               <td data-label="Note" class="muted">{{ item.note or '-' }}</td>
               <td data-label="Amount" class="right expense">{{ item.amount | inr }}</td>
+
               <td data-label="Actions" class="right actions">
                 <a href="{{ url_for('edit_dinner', item_id=item.id) }}" class="btn btn-ghost btn-xs">Edit</a>
+
                 <form method="post" class="inline"
                       action="{{ url_for('delete_dinner', item_id=item.id) }}"
                       onsubmit="return confirm('Delete {{ item.food_name }} ({{ item.amount | inr }})? This cannot be undone.');">

@@ -185,8 +185,10 @@
 <section class="card" style="margin-top: 24px;">
 
   <div class="card-head">
+
     <div>
       <h2>Food Quantity History</h2>
+
       <p class="muted">
         See how much food each person requested or consumed on previous
         dinner records.
@@ -196,18 +198,27 @@
     <span class="muted">
       {{ quantity_history | length }} record(s)
     </span>
+
   </div>
+
 
   {% if quantity_history_by_date %}
 
-    {% for group in quantity_history_by_date %}
+    {% for day_group in quantity_history_by_date %}
 
-      <div class="quantity-history-group" style="margin-top: 20px;">
+      <div class="quantity-history-day" style="margin-bottom: 24px;">
 
-        <div style="margin-bottom: 10px;">
-          <h3 style="margin: 0;">
-            {{ group.date | pretty_date("%d %B %Y") }}
-          </h3>
+        <div
+          style="
+            padding: 12px 14px;
+            margin-bottom: 0;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255,255,255,0.02);
+          "
+        >
+          <strong>
+            {{ day_group.date | pretty_date("%d %b %Y") }}
+          </strong>
         </div>
 
         <div class="table-wrap">
@@ -224,12 +235,14 @@
 
             <tbody>
 
-              {% for record in group.records %}
+              {% for record in day_group.records %}
 
                 <tr>
 
                   <td data-label="Food">
-                    <strong>{{ record.food_name }}</strong>
+                    <strong>
+                      {{ record.food_name }}
+                    </strong>
                   </td>
 
                   <td data-label="Person">
@@ -244,7 +257,6 @@
                         {{ record.quantity }}
                       {% endif %}
                     </strong>
-                    {{ record.food_name|lower }}
                   </td>
 
                 </tr>

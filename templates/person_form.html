@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Edit Person{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Edit Person</h1>
+    <p class="muted">
+      Renaming a person updates their payments, dinner purchases, and food quantity records.
+    </p>
+  </div>
+
+  <a href="{{ url_for('people') }}" class="btn btn-ghost">&larr; Back</a>
+</div>
+
+<section class="card form-card">
+  <form method="post" class="form">
+
+    <div class="field">
+      <label for="person_name">
+        Person Name <span class="req">*</span>
+      </label>
+
+      <input
+        type="text"
+        id="person_name"
+        name="person_name"
+        maxlength="120"
+        required
+        value="{{ person_name }}"
+        autofocus
+      >
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        Save Changes
+      </button>
+
+      <a href="{{ url_for('people') }}" class="btn btn-ghost">
+        Cancel
+      </a>
+    </div>
+
+  </form>
+</section>
+{% endblock %}

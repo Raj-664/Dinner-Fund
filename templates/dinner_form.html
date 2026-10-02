@@ -5,33 +5,75 @@
 <div class="page-head">
   <div>
     <h1>{{ 'Edit Dinner Item' if item else 'Add Dinner Item' }}</h1>
-    <p class="muted">Food bought or brought for dinner. The amount is deducted from the common balance.</p>
+    <p class="muted">
+      Food bought or brought for dinner. The amount is deducted from the common balance.
+    </p>
   </div>
+
   <a href="{{ url_for('dinner') }}" class="btn btn-ghost">&larr; Back</a>
 </div>
 
 <section class="card form-card">
-  <form method="post" novalidate class="form"
+
+  <form method="post"
+        novalidate
+        class="form"
         action="{{ url_for('edit_dinner', item_id=item.id) if item else url_for('add_dinner') }}">
+
+    <!-- Food Name -->
     <div class="field">
-      <label for="food_name">Food Name <span class="req">*</span></label>
-      <input type="text" id="food_name" name="food_name" maxlength="120" required
-             placeholder="e.g. Rice"
-             value="{{ request.form.get('food_name', item.food_name if item else '') }}">
+      <label for="food_name">
+        Food Name <span class="req">*</span>
+      </label>
+
+      <input
+        type="text"
+        id="food_name"
+        name="food_name"
+        maxlength="120"
+        required
+        placeholder="e.g. Roti"
+        value="{{ request.form.get('food_name', item.food_name if item else '') }}"
+      >
     </div>
 
+
+    <!-- Amount -->
     <div class="field">
-      <label for="amount">Amount (&#8377;) <span class="req">*</span></label>
-      <input type="number" id="amount" name="amount" min="0.01" step="0.01" required
-             placeholder="e.g. 40"
-             value="{{ request.form.get('amount', item.amount if item else '') }}">
+      <label for="amount">
+        Amount (&#8377;) <span class="req">*</span>
+      </label>
+
+      <input
+        type="number"
+        id="amount"
+        name="amount"
+        min="0.01"
+        step="0.01"
+        required
+        placeholder="e.g. 90"
+        value="{{ request.form.get('amount', item.amount if item else '') }}"
+      >
     </div>
 
+
+    <!-- Bought / Brought By -->
     <div class="field">
-      <label for="person_name">Bought / Brought By <span class="req">*</span></label>
-      <input type="text" id="person_name" name="person_name" list="people-list" maxlength="120" required
-             placeholder="e.g. Raj"
-             value="{{ request.form.get('person_name', item.person_name if item else '') }}">
+      <label for="person_name">
+        Bought / Brought By <span class="req">*</span>
+      </label>
+
+      <input
+        type="text"
+        id="person_name"
+        name="person_name"
+        list="people-list"
+        maxlength="120"
+        required
+        placeholder="e.g. Raj"
+        value="{{ request.form.get('person_name', item.person_name if item else '') }}"
+      >
+
       <datalist id="people-list">
         {% for person in persons %}
           <option value="{{ person }}"></option>
@@ -39,23 +81,197 @@
       </datalist>
     </div>
 
+
+    <!-- Food Quantity Section -->
     <div class="field">
-      <label for="date">Date <span class="req">*</span></label>
-      <input type="date" id="date" name="date" required
-             value="{{ request.form.get('date', (item.date.isoformat() if item else today.isoformat())) }}">
+
+      <label>
+        Food Quantity
+      </label>
+
+      <p class="muted">
+        Select each person and enter how much they want.
+      </p>
+
+      <div id="quantity-list">
+
+        <!-- Quantity Row -->
+        <div class="quantity-row">
+
+          <div class="quantity-person">
+            <label>Person</label>
+
+            <input
+              type="text"
+              name="quantity_person[]"
+              list="people-list"
+              maxlength="120"
+              placeholder="e.g. Raj"
+            >
+          </div>
+
+          <div class="quantity-value">
+            <label>Quantity</label>
+
+            <input
+              type="number"
+              name="quantity[]"
+              min="0.01"
+              step="0.01"
+              placeholder="e.g. 3"
+            >
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-ghost remove-quantity"
+          >
+            Remove
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        id="add-quantity"
+        class="btn btn-ghost"
+        style="margin-top: 10px;"
+      >
+        + Add Person
+      </button>
+
     </div>
 
+
+    <!-- Date -->
     <div class="field">
-      <label for="note">Note <span class="muted">(optional)</span></label>
-      <input type="text" id="note" name="note" maxlength="255"
-             placeholder="e.g. Dinner for 5 people"
-             value="{{ request.form.get('note', item.note if item else '') }}">
+      <label for="date">
+        Date <span class="req">*</span>
+      </label>
+
+      <input
+        type="date"
+        id="date"
+        name="date"
+        required
+        value="{{ request.form.get('date', (item.date.isoformat() if item else today.isoformat())) }}"
+      >
     </div>
 
+
+    <!-- Note -->
+    <div class="field">
+      <label for="note">
+        Note <span class="muted">(optional)</span>
+      </label>
+
+      <input
+        type="text"
+        id="note"
+        name="note"
+        maxlength="255"
+        placeholder="e.g. Dinner for 5 people"
+        value="{{ request.form.get('note', item.note if item else '') }}"
+      >
+    </div>
+
+
+    <!-- Buttons -->
     <div class="form-actions">
-      <button type="submit" class="btn btn-primary">{{ 'Save Changes' if item else 'Add Dinner Item' }}</button>
-      <a href="{{ url_for('dinner') }}" class="btn btn-ghost">Cancel</a>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+      >
+        {{ 'Save Changes' if item else 'Add Dinner Item' }}
+      </button>
+
+      <a
+        href="{{ url_for('dinner') }}"
+        class="btn btn-ghost"
+      >
+        Cancel
+      </a>
+
     </div>
+
   </form>
+
 </section>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const quantityList = document.getElementById("quantity-list");
+  const addQuantityButton = document.getElementById("add-quantity");
+
+  function createQuantityRow() {
+
+    const row = document.createElement("div");
+
+    row.className = "quantity-row";
+
+    row.innerHTML = `
+      <div class="quantity-person">
+        <label>Person</label>
+
+        <input
+          type="text"
+          name="quantity_person[]"
+          list="people-list"
+          maxlength="120"
+          placeholder="e.g. Raj"
+        >
+      </div>
+
+      <div class="quantity-value">
+        <label>Quantity</label>
+
+        <input
+          type="number"
+          name="quantity[]"
+          min="0.01"
+          step="0.01"
+          placeholder="e.g. 3"
+        >
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-ghost remove-quantity"
+      >
+        Remove
+      </button>
+    `;
+
+    quantityList.appendChild(row);
+  }
+
+
+  addQuantityButton.addEventListener("click", function () {
+    createQuantityRow();
+  });
+
+
+  quantityList.addEventListener("click", function (event) {
+
+    if (event.target.classList.contains("remove-quantity")) {
+
+      const rows = quantityList.querySelectorAll(".quantity-row");
+
+      if (rows.length > 1) {
+        event.target.closest(".quantity-row").remove();
+      }
+
+    }
+
+  });
+
+});
+</script>
+
 {% endblock %}

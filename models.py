@@ -30,5 +30,43 @@ class DinnerItem(db.Model):
     note = db.Column(db.String(255), default="")
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
+    quantities = db.relationship(
+        "FoodQuantity",
+        backref="dinner_item",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
+
     def __repr__(self):
         return f"<DinnerItem {self.food_name} {self.amount}>"
+
+
+class FoodQuantity(db.Model):
+    __tablename__ = "food_quantities"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    dinner_item_id = db.Column(
+        db.Integer,
+        db.ForeignKey("dinner_items.id"),
+        nullable=False
+    )
+
+    person_name = db.Column(
+        db.String(120),
+        nullable=False
+    )
+
+    quantity = db.Column(
+        db.Float,
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.now
+    )
+
+    def __repr__(self):
+        return f"<FoodQuantity {self.person_name} {self.quantity}>"

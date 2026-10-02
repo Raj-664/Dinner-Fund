@@ -30,6 +30,26 @@
             <span>Food amount brought</span>
             <strong class="expense">{{ person.food_amount | inr }}</strong>
           </div>
+
+          <div class="person-actions" style="margin-top: 16px; display: flex; gap: 8px;">
+            <a
+              href="{{ url_for('edit_person', person_name=person.name) }}"
+              class="btn btn-ghost btn-xs"
+            >
+              Edit
+            </a>
+
+            <form
+              method="post"
+              action="{{ url_for('delete_person', person_name=person.name) }}"
+              class="inline"
+              onsubmit="return confirm('Delete {{ person.name }} and ALL of this person\'s payments, dinner purchases, and food quantity records? This cannot be undone.');"
+            >
+              <button type="submit" class="btn btn-danger btn-xs">
+                Delete
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     {% endfor %}
