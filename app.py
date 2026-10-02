@@ -1127,6 +1127,26 @@ def people():
 def history():
     rows = daily_history()
 
+    # Individual payment records for History edit/delete actions.
+    payment_records = (
+        Payment.query
+        .order_by(
+            Payment.date.desc(),
+            Payment.id.desc(),
+        )
+        .all()
+    )
+
+    # Individual dinner records for History edit/delete actions.
+    dinner_records = (
+        DinnerItem.query
+        .order_by(
+            DinnerItem.date.desc(),
+            DinnerItem.id.desc(),
+        )
+        .all()
+    )
+
     quantity_records = (
         db.session.query(FoodQuantity, DinnerItem)
         .join(
@@ -1141,13 +1161,14 @@ def history():
         .all()
     )
 
-    # Group quantity records by the actual dinner date. The History template
-    # can show the date once and then list all food/person/quantity rows below.
+    # Group quantity records by the actual dinner date.
     quantity_history_by_date = []
 
     grouped = {}
+
     for quantity, item in quantity_records:
         day = item.date
+
         if day not in grouped:
             grouped[day] = {
                 "date": day,
@@ -1174,6 +1195,8 @@ def history():
         rows=rows,
         total_paid=total_paid(),
         total_food=total_food(),
+        payment_records=payment_records,
+        dinner_records=dinner_records,
         quantity_history=quantity_records,
         quantity_history_by_date=quantity_history_by_date,
     )
