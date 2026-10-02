@@ -1,5 +1,8 @@
 import os
 from datetime import date, datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from flask import (
     Flask,
